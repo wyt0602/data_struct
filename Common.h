@@ -11,6 +11,7 @@
 
 typedef int (*handle_element)(void *arg, void *element);
 typedef int (*destroy_element)(void *element);
+typedef int (*iterate_handle)(void *element);
 
 typedef struct DataCommon{
     //the data's linked method that user chooses 
@@ -21,6 +22,7 @@ typedef struct DataCommon{
     handle_element search_match;
     handle_element alter_match;
     destroy_element destroy_node;
+    iterate_handle handle_iteration;
 
     //public handle list begin
     int (*insert)(struct DataCommon *common, void *element);
@@ -31,6 +33,7 @@ typedef struct DataCommon{
     (void*) (*prior)(struct DataCommon *common, void *element, handle_element search_match);
     (void*) (*next)(struct DataCommon *common, void *element, handle_element search_match);
 
+    int (*iterate)(struct DataCommon *common, iterate_handle handle_iteration);
     int (*size)(struct DataCommon *common);
     int (*clear)(struct DataCommon *common, destroy_element destroy_node);
     //public handle list end
@@ -49,6 +52,7 @@ typedef struct DataCommon{
     .alter = NULL,\
     .prior = NULL,\
     .next = NULL,\
+    .iterate = NULL,\
     .size = NULL,\
     .clear = NULL\
 }
