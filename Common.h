@@ -26,16 +26,16 @@ typedef struct DataCommon{
 
     //public handle list begin
     int (*insert)(struct DataCommon *common, void *element);
-    int (*remove)(struct DataCommon *common, void *element, handle_element remove_match);
-    (void*) (*search)(struct DataCommon *common, void *element, handle_element search_match);
-    int (*alter)(struct DataCommon *common, void *element, handle_element alter_match);
+    int (*remove)(struct DataCommon *common, void *element);
+    (void*) (*search)(struct DataCommon *common, void *element);
+    int (*alter)(struct DataCommon *common, void *element);
 
-    (void*) (*prior)(struct DataCommon *common, void *element, handle_element search_match);
-    (void*) (*next)(struct DataCommon *common, void *element, handle_element search_match);
+    (void*) (*prior)(struct DataCommon *common, void *element);
+    (void*) (*next)(struct DataCommon *common, void *element);
 
-    int (*iterate)(struct DataCommon *common, iterate_handle handle_iteration);
+    int (*iterate)(struct DataCommon *common);
     int (*size)(struct DataCommon *common);
-    int (*clear)(struct DataCommon *common, destroy_element destroy_node);
+    int (*clear)(struct DataCommon *common);
     //public handle list end
 
 }DataCommon;

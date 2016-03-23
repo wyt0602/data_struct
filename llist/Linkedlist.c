@@ -20,7 +20,7 @@
  * @Param common data commont struct
  * @Param element the node that need to be inserted
  *
- * @Returns   0 means successe;other means error
+ * @Returns   0 means succese;other means error
  */
 /* ----------------------------------------------------------------------------*/
 static int llist_insert(DataCommon *common, void *element)
@@ -41,17 +41,17 @@ static int llist_insert(DataCommon *common, void *element)
     }
     node->element = element;
     node->next = NULL;
-    
+
     if (list->first != NULL){
-    /**
-     *add a new node to the end of list
-     */ 
+	/**
+	 *add a new node to the end of list
+	 */ 
 	list->last->next = node;
 	list->last = node;
     }else{
-    /**
-     *add first node to the list
-     */ 
+	/**
+	 *add first node to the list
+	 */ 
 	list->first = node;
 	list->last = node;
     }
