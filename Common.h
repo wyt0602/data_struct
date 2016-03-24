@@ -9,7 +9,17 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
-typedef int (*handle_element)(void *arg, void *element);
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  handle_element
+ *
+ * @Param element : element in the list
+ * @Param arg : user's arg
+ *
+ * @Returns   0 is OK; other is failed
+ */
+/* ----------------------------------------------------------------------------*/
+typedef int (*handle_element)(void *element, void *arg);
 typedef int (*destroy_element)(void *element);
 typedef int (*iterate_handle)(void *element);
 

@@ -20,7 +20,7 @@
  * @Param common data commont struct
  * @Param element the node that need to be inserted
  *
- * @Returns   0 means succese;other means error
+ * @Returns   0 is OK;other is failed
  */
 /* ----------------------------------------------------------------------------*/
 static int llist_insert(DataCommon *common, void *element)
@@ -31,7 +31,7 @@ static int llist_insert(DataCommon *common, void *element)
     }
 
     /**
-     *new a linked node and add element to it
+     *create a linked node and add element to it
      */ 
     LinkedList *list = (LinkedList*)(common->linked_type);
     LinkedNode *node = (LinkedNode*)malloc(sizeof(LinkedNode));
@@ -61,18 +61,371 @@ static int llist_insert(DataCommon *common, void *element)
 }
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_remove:remove a node from the list
+ *
+ * @Param common data common struct
+ * @Param element the node's information that needs to be removed
+ *
+ * @Returns   0 is OK;other is failed
+ */
+/* ----------------------------------------------------------------------------*/
+static int llist_remove(DataCommon *common, void *element)
+{
+    if ((common == NULL) || (element == NULL)){
+	ERROR("pointer is null!");
+	return -1;
+    }
+
+    LinkedList *list = (LinkedList*)(common->linked_type);
+    LinkedNode *cur = list->first;
+    LinkedNode *pre = NULL;
+
+    while(cur){
+	/**
+	 *match the node 
+	 */ 
+	if ((common->remove_match)(cur, element) == 0){
+	    /**
+	     *remove the middle node 
+	     */ 
+	    if ((cur != common->first) && (cur != common->last)){
+		pre->next = cur->next;
+	    }
+
+	    /**
+	     *remove the first node 
+	     */ 
+	    if (cur == common->first){
+		common->first = cur->next;
+	    }
+
+	    /**
+	     *remove the last node 
+	     */ 
+	    if (cur == common->last){
+		if (pre != NULL)
+		    pre->next = NULL;
+		common->last = pre;
+	    }
+
+	    common->destroy_node(cur->element);
+	    cur->element = NULL;
+	    cur->next = NULL;
+	    free(cur);
+	    common->size--;
+	    return 0;
+	}
+
+	pre = cur;
+	cur = cur->next;
+    }
+
+    INFO("can not match a node!");
+    return -1;
+}
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_search get the node that user needs
+ *
+ * @Param common data common struct
+ * @Param element the index of the node
+ *
+ * @Returns   NULL means no one; other is the address of the matched node
+ */
+/* ----------------------------------------------------------------------------*/
+static void* llist_search(DataCommon *common, void *element)
+{
+    if ((common == NULL) || (element == NULL)){
+	ERROR("pointer is null!");
+	return NULL;
+    }
+
+    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedNode *node = list->first;
+
+    while(node){
+	if((common->search_match)(node, element) == 0)
+	    return node;
+	else
+	    node = node->next;
+    }
+
+    INFO("no matched node!");
+    return NULL;
+}
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_alter alter the matched node
+ *
+ * @Param common data common struct
+ * @Param element the searched node's information
+ *
+ * @Returns   0 is OK; other is failed
+ */
+/* ----------------------------------------------------------------------------*/
+static int llist_alter(DataCommon *common, void *element)
+{
+    if ((common == NULL) || (element == NULL)){
+	ERROR("pointer is null!");
+	return -1;
+    }
+
+    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedNode *node = list->first;
+
+    while(node){
+	if ((common->alter_match)(node, element) == 0)
+	    return 0;
+	else
+	    node = node->next;
+    }
+
+    INFO("no matched node!");
+    return -1;
+}
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_prior return the prior node of the matched one
+ *
+ * @Param common data common struct
+ * @Param element match information
+ *
+ * @Returns   NULL means can not find the matched one;other is the address of 
+ * 	      the node
+ */
+/* ----------------------------------------------------------------------------*/
+static void* llist_prior(DataCommon *common, void *element)
+{
+    if ((common == NULL) || (element == NULL)){
+	ERROR("pointer is null!");
+	return NULL;
+    }
+
+    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedNode *cur = list->first;
+    LinkedNode *pre = NULL;
+
+    while(cur){
+	if((common->search_match)(cur, element) == 0)
+	    return pre;
+	else{
+	    pre = cur;
+	    cur = cur->next;
+	}
+    }
+
+    INFO("no matched one!")
+    return NULL;
+}
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_next return the next node of the matched node
+ *
+ * @Param common data common struct
+ * @Param element match information
+ *
+ * @Returns   NULL means can not find the matched one;other is the address of 
+ *            the node
+ */
+/* ----------------------------------------------------------------------------*/
+static void* llist_next(DataCommon *common, void * element)
+{
+    if ((common == NULL) || (element == NULL)){
+	ERROR("pointer is null!");
+	return NULL;
+    }
+
+    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedNode *cur = list->first;
+
+    while(cur){
+	if((common->search_match)(cur, element) == 0)
+	    return cur->next;
+	else
+	    cur = cur->next;
+    }
+
+    INFO("no matched one!")
+    return NULL;
+}
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_iterate iterate the list
+ *
+ * @Param common data common struct
+ *
+ * @Returns   0 is OK;other is failed
+ */
+/* ----------------------------------------------------------------------------*/
+static int llist_iterate(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("pointer is null!");
+	return -1;
+    }
+
+    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedNode *node = list->first;
+
+    while(node){
+	if ((common->handle_iteration)(node) == 0)
+	    node = node->next;
+	else{
+	    ERROR("handle_iteration function error!");
+	    return -1;
+	}
+    }
+
+    return 0;
+}
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_size return the number of the node
+ *
+ * @Param common data common struct
+ *
+ * @Returns   -1 is failed; >=0 is the number of the node
+ */
+/* ----------------------------------------------------------------------------*/
+static int llist_size(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("pointer is null!");
+	return -1;
+    }
+
+    LinkedList *list = (LinkedList*)(common->liked_type);
+    
+    return list->size;
+}
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_clear destroy the list
+ *
+ * @Param common data common struct
+ *
+ * @Returns   -1 is failed; >=0 is the number of the node that is destroyed
+ */
+/* ----------------------------------------------------------------------------*/
+static int llist_clear(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("pointer is null!");
+	return -1;
+    }
 
+    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedNode *node = list->first;
+    LinkedNode *temp = NULL;
+    int ret = 0;
+
+    while(node){
+	temp = node;
+	node = node->next;
+
+	common->destroy_node(temp->element);
+	temp->element = NULL;
+	temp->next = NULL;
+	free(temp);
+	
+	ret++;
+    }
+
+    return ret;
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_new create a list, initial datacommon struct
+ *
+ * @Param common data common struct
+ *
+ * @Returns   0 is OK; other is failed
+ */
+/* ----------------------------------------------------------------------------*/
+int llist_new(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("pointer is null!");
+	return -1;
+    }
+
+    /**
+     * check the user-defined functhion
+     */
+    int handle_check = remove_match \
+		       &&search_match \
+		       &&alter_match \
+		       &&destroy_node \
+		       &&handle_iteration;
+    if (handle_check == 0){
+	ERROR("missed user defined function!");
+	return -1;
+    }
+
+    LinkedList *list = (LinkedList*)malloc(sizeof(LinkedList));
+    if (list == NULL){
+	ERROR("malloc error!");
+	return -1;
+    }
+    list->first = NULL;
+    list->last = NULL;
+    list->size = 0;
+
+    common->liked_type = list;
+    common->insert = llist_insert;
+    common->remove = llist_remove;
+    common->search = llist_search;
+    common->alter = llist_alter;
+    common->prior = llist_prior;
+    common->iterate = llist_iterate;
+    common->size = llist_size;
+    common->clear = llist_clear;
+
+    return 0;
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  llist_delete delete the list
+ *
+ * @Param common data common struct
+ *
+ * @Returns   0 is OK; othes is failed
+ */
+/* ----------------------------------------------------------------------------*/
+int llist_delete(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("pointer is null!");
+	return -1;
+    }
+
+    llist_clear(common);
+    
+    LinkedList *list = (LinkedList*)(common->linked_type);
+    list->first = NULL;
+    list->last = NULL;
+    list->size = 0;
+    free(list);
+
+    return 0;
+}
