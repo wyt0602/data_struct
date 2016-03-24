@@ -8,9 +8,9 @@
 
 
 #include <stdlib.h>
-#include "../Common.h"
+#include "Common.h"
 #include "Linkedlist.h"
-#include "../util/Log.h"
+#include "util/Log.h"
 
 
 /* --------------------------------------------------------------------------*/
@@ -90,31 +90,31 @@ static int llist_remove(DataCommon *common, void *element)
 	    /**
 	     *remove the middle node 
 	     */ 
-	    if ((cur != common->first) && (cur != common->last)){
+	    if ((cur != list->first) && (cur != list->last)){
 		pre->next = cur->next;
 	    }
 
 	    /**
 	     *remove the first node 
 	     */ 
-	    if (cur == common->first){
-		common->first = cur->next;
+	    if (cur == list->first){
+		list->first = cur->next;
 	    }
 
 	    /**
 	     *remove the last node 
 	     */ 
-	    if (cur == common->last){
+	    if (cur == list->last){
 		if (pre != NULL)
 		    pre->next = NULL;
-		common->last = pre;
+		list->last = pre;
 	    }
 
 	    common->destroy_node(cur->element);
 	    cur->element = NULL;
 	    cur->next = NULL;
 	    free(cur);
-	    common->size--;
+	    list->size--;
 	    return 0;
 	}
 
@@ -144,7 +144,7 @@ static void* llist_search(DataCommon *common, void *element)
 	return NULL;
     }
 
-    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedList *list = (LinkedList*)(common->linked_type);
     LinkedNode *node = list->first;
 
     while(node){
@@ -176,7 +176,7 @@ static int llist_alter(DataCommon *common, void *element)
 	return -1;
     }
 
-    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedList *list = (LinkedList*)(common->linked_type);
     LinkedNode *node = list->first;
 
     while(node){
@@ -209,7 +209,7 @@ static void* llist_prior(DataCommon *common, void *element)
 	return NULL;
     }
 
-    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedList *list = (LinkedList*)(common->linked_type);
     LinkedNode *cur = list->first;
     LinkedNode *pre = NULL;
 
@@ -245,7 +245,7 @@ static void* llist_next(DataCommon *common, void * element)
 	return NULL;
     }
 
-    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedList *list = (LinkedList*)(common->linked_type);
     LinkedNode *cur = list->first;
 
     while(cur){
@@ -276,7 +276,7 @@ static int llist_iterate(DataCommon *common)
 	return -1;
     }
 
-    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedList *list = (LinkedList*)(common->linked_type);
     LinkedNode *node = list->first;
 
     while(node){
@@ -308,7 +308,7 @@ static int llist_size(DataCommon *common)
 	return -1;
     }
 
-    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedList *list = (LinkedList*)(common->linked_type);
     
     return list->size;
 }
@@ -330,7 +330,7 @@ static int llist_clear(DataCommon *common)
 	return -1;
     }
 
-    LinkedList *list = (LinkedList*)(common->liked_type);
+    LinkedList *list = (LinkedList*)(common->linked_type);
     LinkedNode *node = list->first;
     LinkedNode *temp = NULL;
     int ret = 0;
@@ -370,11 +370,11 @@ int llist_new(DataCommon *common)
     /**
      * check the user-defined functhion
      */
-    int handle_check = remove_match \
-		       &&search_match \
-		       &&alter_match \
-		       &&destroy_node \
-		       &&handle_iteration;
+    int handle_check = common->remove_match \
+		       &&common->search_match \
+		       &&common->alter_match \
+		       &&common->destroy_node \
+		       &&common->handle_iteration;
     if (handle_check == 0){
 	ERROR("missed user defined function!");
 	return -1;
@@ -389,7 +389,7 @@ int llist_new(DataCommon *common)
     list->last = NULL;
     list->size = 0;
 
-    common->liked_type = list;
+    common->linked_type = list;
     common->insert = llist_insert;
     common->remove = llist_remove;
     common->search = llist_search;
