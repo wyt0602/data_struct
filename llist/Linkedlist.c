@@ -86,7 +86,7 @@ static int llist_remove(DataCommon *common, void *element)
 	/**
 	 *match the node 
 	 */ 
-	if ((common->remove_match)(cur, element) == 0){
+	if ((common->remove_match)(cur->element, element) == 0){
 	    /**
 	     *remove the middle node 
 	     */ 
@@ -148,8 +148,8 @@ static void* llist_search(DataCommon *common, void *element)
     LinkedNode *node = list->first;
 
     while(node){
-	if((common->search_match)(node, element) == 0)
-	    return node;
+	if((common->search_match)(node->element, element) == 0)
+	    return node->element;
 	else
 	    node = node->next;
     }
@@ -180,7 +180,7 @@ static int llist_alter(DataCommon *common, void *element)
     LinkedNode *node = list->first;
 
     while(node){
-	if ((common->alter_match)(node, element) == 0)
+	if ((common->alter_match)(node->element, element) == 0)
 	    return 0;
 	else
 	    node = node->next;
@@ -214,8 +214,8 @@ static void* llist_prior(DataCommon *common, void *element)
     LinkedNode *pre = NULL;
 
     while(cur){
-	if((common->search_match)(cur, element) == 0)
-	    return pre;
+	if((common->search_match)(cur->element, element) == 0)
+	    return pre->element;
 	else{
 	    pre = cur;
 	    cur = cur->next;
@@ -249,8 +249,8 @@ static void* llist_next(DataCommon *common, void * element)
     LinkedNode *cur = list->first;
 
     while(cur){
-	if((common->search_match)(cur, element) == 0)
-	    return cur->next;
+	if((common->search_match)(cur->element, element) == 0)
+	    return cur->next->element;
 	else
 	    cur = cur->next;
     }
@@ -280,7 +280,7 @@ static int llist_iterate(DataCommon *common)
     LinkedNode *node = list->first;
 
     while(node){
-	if ((common->handle_iteration)(node) == 0)
+	if ((common->handle_iteration)(node->element) == 0)
 	    node = node->next;
 	else{
 	    ERROR("handle_iteration function error!");
