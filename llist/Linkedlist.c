@@ -215,14 +215,18 @@ static void* llist_prior(DataCommon *common, void *element)
 
     while(cur){
 	if((common->search_match)(cur->element, element) == 0)
-	    return pre->element;
-	else{
+	{
+	    if (pre == NULL)
+		return NULL;
+	    else
+		return pre->element;
+	}else{
 	    pre = cur;
 	    cur = cur->next;
 	}
     }
 
-    INFO("no matched one!")
+    INFO("no matched one!");
     return NULL;
 }
 
@@ -249,13 +253,17 @@ static void* llist_next(DataCommon *common, void * element)
     LinkedNode *cur = list->first;
 
     while(cur){
-	if((common->search_match)(cur->element, element) == 0)
-	    return cur->next->element;
-	else
+	if((common->search_match)(cur->element, element) == 0){
+	    if (cur->next == NULL)
+		return NULL;
+	    else
+		return cur->next->element;
+	}else{
 	    cur = cur->next;
+	}
     }
 
-    INFO("no matched one!")
+    INFO("no matched one!");
     return NULL;
 }
 
@@ -309,7 +317,7 @@ static int llist_size(DataCommon *common)
     }
 
     LinkedList *list = (LinkedList*)(common->linked_type);
-    
+
     return list->size;
 }
 
@@ -343,9 +351,13 @@ static int llist_clear(DataCommon *common)
 	temp->element = NULL;
 	temp->next = NULL;
 	free(temp);
-	
+
 	ret++;
     }
+
+    list->first = NULL;
+    list->last = NULL;
+    list->size = 0;
 
     return ret;
 }
@@ -395,6 +407,7 @@ int llist_new(DataCommon *common)
     common->search = llist_search;
     common->alter = llist_alter;
     common->prior = llist_prior;
+    common->next = llist_next;
     common->iterate = llist_iterate;
     common->size = llist_size;
     common->clear = llist_clear;
@@ -420,7 +433,7 @@ int llist_delete(DataCommon *common)
     }
 
     llist_clear(common);
-    
+
     LinkedList *list = (LinkedList*)(common->linked_type);
     list->first = NULL;
     list->last = NULL;
