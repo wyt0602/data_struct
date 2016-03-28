@@ -33,8 +33,8 @@ static int dllist_insert(DataCommon *common, void *element)
     /**
      * Create a new linked node and initial it
      */
-    DLinkeList *list = (DLinkedList*)(common->kinked_type);
-    DLinkeNode *node = (DLinkedNode*)malloc(sizeof(DLinkedNode));
+    DLinkedList *list = (DLinkedList*)(common->linked_type);
+    DLinkedNode *node = (DLinkedNode*)malloc(sizeof(DLinkedNode));
     if (node == NULL){
 	ERROR("malloc failed!");
 	return -1;
@@ -299,7 +299,152 @@ static int dllist_iterate(DataCommon *common)
 }
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  dllist_size Return the list's size
+ *
+ * @Param common Data common struct
+ *
+ * @Returns   -1 is failed; >=0 is the number of list
+ */
+/* ----------------------------------------------------------------------------*/
+static int dllist_size(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("null pointer!");
+	return -1;
+    }
+
+    DLinkedList *list = (DLinkedList*)(common->linked_type);
+
+    return list->size;
+}
 
 
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  dllist_clear Delete all node in the list
+ *
+ * @Param common Data common struct
+ *
+ * @Returns -1 is failed; >=0 is the number of node that is destroyed   
+ */
+/* ----------------------------------------------------------------------------*/
+static int dllist_clear(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("null pointer!");
+	return -1;
+    }
 
+    DLinkedList *list = (DLinkedList*)(common->linked_type);
+    DLinkedNode *node = list->first;
+    DLinkedNode *temp = NULL;
+    int ret = 0;
+
+    while (node){
+	temp = node;
+	node = node->next;
+
+	common->destroy_node(temp->element);
+	temp->element = NULL;
+	temp->previous = NULL;
+	temp->next = NULL;
+	free(temp);
+
+	ret++;
+    }
+
+    list->first = NULL;
+    list->last = NULL;
+    list->size = 0;
+
+    return ret;
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  dllist_new Create a double linked list and initial it
+ *  
+ * @Param common Data common struct
+ *
+ * @Returns   0 is OK; other is failed
+ */
+/* ----------------------------------------------------------------------------*/
+int dllist_new(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("NULL pointer!");
+	return -1;
+    }
+
+    /**
+     * check the user-defined function
+     */ 
+    int handle_check = common->remove_match \
+		       &&common->search_match \
+		       &&common->alter_match \
+		       &&common->destroy_node \
+		       &&common->handle_iteration;
+    if (handle_check == 0){ 
+	ERROR("missed user defined function!");
+	return -1; 
+    } 
+
+    /**
+     * create a double linked list struct and initial it
+     */ 
+    DLinkedList *list = (DLinkedList*)malloc(sizeof(DLinkedList));
+    if (list == NULL){
+	ERROR("malloc error!");
+	return -1;
+    }
+    list->first = NULL;
+    list->last = NULL;
+    list->size = 0;
+
+    /**
+     * initial DataCommon struct
+     */ 
+    common->linked_type = list;
+    common->insert = dllist_insert;
+    common->remove = dllist_remove;
+    common->search = dllist_search;
+    common->alter = dllist_alter;
+    common->prior = dllist_prior;
+    common->next = dllist_next;
+    common->iterate = dllist_iterate;
+    common->size = dllist_size;
+    common->clear = dllist_clear;
+
+    return 0;
+}
+
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  dllist_delete Delete the list
+ *
+ * @Param common Data common struct
+ *
+ * @Returns   -1 is failed; >=0 is the number of node
+ */
+/* ----------------------------------------------------------------------------*/
+int dllist_delete(DataCommon *common)
+{
+    if (common == NULL){
+	ERROR("NULL pointer!");
+	return -1;
+    }
+
+    int ret = dllist_clear(common);
+    DLinkedList *list = (DLinkedList*)(common->linked_type);
+    list->first = NULL;
+    list->last = NULL;
+    list->size = 0;
+    free(list);
+
+    return ret;
+}
 

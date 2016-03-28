@@ -14,7 +14,7 @@
 typedef struct DLinkedNode{
     void *element;
     struct DLinkedNode *previous;
-    struct DlinkedNode *next;
+    struct DLinkedNode *next;
 }DLinkedNode;
 
 typedef struct DLinkedList{

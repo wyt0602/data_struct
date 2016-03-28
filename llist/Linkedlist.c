@@ -422,7 +422,7 @@ int llist_new(DataCommon *common)
  *
  * @Param common data common struct
  *
- * @Returns   0 is OK; othes is failed
+ * @Returns   -1 is failed; >=0 is the number of node 
  */
 /* ----------------------------------------------------------------------------*/
 int llist_delete(DataCommon *common)
@@ -432,7 +432,7 @@ int llist_delete(DataCommon *common)
 	return -1;
     }
 
-    llist_clear(common);
+    int ret = llist_clear(common);
 
     LinkedList *list = (LinkedList*)(common->linked_type);
     list->first = NULL;
@@ -440,5 +440,5 @@ int llist_delete(DataCommon *common)
     list->size = 0;
     free(list);
 
-    return 0;
+    return ret;
 }
