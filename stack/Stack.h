@@ -40,4 +40,10 @@ int stack_decrease(Stack *stack, unsigned int size);
 int stack_push(Stack *stack, void *element);
 void* stack_pop(Stack *stack);
 
+#define STACK_NULL {\
+    .start_address = NULL, \
+    .size = 0, \
+    .top = 0 \
+}
+
 #endif

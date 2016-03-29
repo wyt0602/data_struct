@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 
-#include "stack.h"
+#include "Stack.h"
 #include "util/Log.h"
 
 
@@ -86,14 +86,14 @@ int stack_clear(Stack *stack, handle_destroy destroy_data)
  * @Returns   -1 is failed; >=0 is the number of data element
  */
 /* ----------------------------------------------------------------------------*/
-int stack_delete(Stack *stack)
+int stack_delete(Stack *stack, handle_destroy destroy_data)
 {
     if (stack == NULL){
 	ERROR("null pointer!");
 	return -1;
     }
 
-    int ret = stack_clear(stack);
+    int ret = stack_clear(stack, destroy_data);
     free(stack->start_address);
     stack->start_address = NULL;
     stack->size = 0;
