@@ -114,7 +114,10 @@ void test_stack_pop()
     CU_ASSERT_PTR_EQUAL_FATAL(stack_pop(&stack), p1);
 }
 
-
+void test_stack_delete()
+{
+    CU_ASSERT_EQUAL_FATAL(stack_delete(&stack, destroy_node), 4);
+}
 
 /*************Test Case End*********************/
 
@@ -148,7 +151,7 @@ static CU_TestInfo testcase1[] = {
     { "test_stack_enlarge", test_stack_enlarge},
     { "test_stack_push", test_stack_push},
     { "test_stack_decrease", test_stack_decrease},
-    { "test_stack_pop", test_stack_pop},
+    { "test_stack_delete", test_stack_delete},
     CU_TEST_INFO_NULL
 };
 
