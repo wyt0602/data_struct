@@ -46,10 +46,11 @@ typedef struct Queue{
     .node_count = 0 \
 }
 
-typedef void (*handle_destroy)(void *element);
+typedef void (*handle)(void *element);
 
-int queue_clear(Queue *queue, handle_destroy destroy_node);
-int queue_delete(Queue *queue, handle_destroy destroy_node);
+int queue_clear(Queue *queue, handle destroy_node);
+int queue_delete(Queue *queue, handle destroy_node);
+int queue_iterate(Queue *queue, handle handle_iteration);
 
 int queue_in(Queue *queue, void *element);
 void* queue_out(Queue *queue);

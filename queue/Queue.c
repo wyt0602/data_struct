@@ -124,7 +124,7 @@ void* queue_out(Queue *queue)
  * @Returns   -1 is failed; other is the count of the node in the queue
  */
 /* ----------------------------------------------------------------------------*/
-int queue_clear(Queue *queue, handle_destroy destroy_node)
+int queue_clear(Queue *queue, handle destroy_node)
 {
     if (queue == NULL){
 	ERROR("Null pointer!");
@@ -176,7 +176,7 @@ int queue_clear(Queue *queue, handle_destroy destroy_node)
  * @Returns   -1 is failed; other is the number of all the node
  */
 /* ----------------------------------------------------------------------------*/
-int queue_delete(Queue *queue, handle_destroy destroy_node)
+int queue_delete(Queue *queue, handle destroy_node)
 {
     if (queue == NULL){
 	ERROR("Null pointer!");
@@ -206,3 +206,31 @@ int queue_delete(Queue *queue, handle_destroy destroy_node)
     return ret;
 }
 
+
+/* --------------------------------------------------------------------------*/
+/**
+ * @Brief  queue_iterate Iterate the queue
+ *
+ * @Param queue Queue struct
+ * @Param handle_iteration iterate function
+ *
+ * @Returns   -1 is failed; other is the number of node in the queue
+ */
+/* ----------------------------------------------------------------------------*/
+int queue_iterate(Queue *queue, handle handle_iteration)
+{
+    if (queue == NULL || handle_iteration == NULL){
+	ERROR("Null pointer!");
+	return -1;
+    }
+
+    int ret = 0;
+    QueueNode *node = queue->head;
+    while (node){
+	handle_iteration(node->element);
+	node = node->next;
+	ret++;
+    }
+
+    return ret;
+}
