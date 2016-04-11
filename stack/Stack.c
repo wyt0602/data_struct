@@ -97,6 +97,7 @@ int stack_delete(Stack *stack, handle_destroy destroy_data)
     free(stack->start_address);
     stack->start_address = NULL;
     stack->size = 0;
+    stack->top = 0;
 
     return ret;
 }
